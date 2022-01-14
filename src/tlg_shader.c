@@ -18,6 +18,7 @@ void tlg_read_file(char* path, char** dst)
 	while((c = fgetc(pFile)) != EOF)
 		(*dst)[dstTop++] = c;
 	fclose(pFile);
+	(*dst)[dstTop++] = '\0';
 }
 
 void tlg_compile_shader(char* src, uint32_t SHADER_TYPE, uint32_t* dst){

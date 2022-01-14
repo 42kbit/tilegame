@@ -4,9 +4,12 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include "tlg_shader.h"
+#include "tlg_texture.h"
 
 GLFWwindow* pGlfwwindow = NULL;
 uint32_t programID = 0;
+uint32_t txTux = 0;
+
 void tlg_onload(void) {
 	if(!glfwInit())
 		exit(-1);
@@ -28,7 +31,14 @@ void tlg_onload(void) {
 			"res/shaders/default_vertex.glsl",
 		       	"res/shaders/default_fragment.glsl",
 		       	&programID);	
-}
+
+	tlg_gl_gen_texture2D_from_file(
+			"res/textures/tux.png",
+			TLG_STB_FLIPONLOAD, 
+			GL_LINEAR, 
+			GL_CLAMP_TO_EDGE,
+			&txTux);
+	}
 
 void tlg_create_glbuffer(void* data, size_t size, uint32_t DRAW_HINT, uint32_t* dst){
 	glCreateBuffers(1, dst);
@@ -39,10 +49,10 @@ void tlg_onupdate(void){
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	float vertices[] = {
-		0.f, 0.f,
-		1.f, 0.f,
-		1.f, 1.f,
-		0.f, 1.f
+		0.f, 0.f, 0.f, 0.f,
+		1.f, 0.f, 1.f, 0.f,
+		1.f, 1.f, 1.f, 1.f,
+		0.f, 1.f, 0.f, 1.f
 	};
 	uint32_t indecies[] = 
 	{
@@ -59,11 +69,23 @@ void tlg_onupdate(void){
 			2,
 			GL_FLOAT,
 			GL_FALSE,
-			sizeof(float) * 2,
+			sizeof(float) * 4,
 			(const void*)0);
+	glVertexAttribPointer(
+			1,
+			2,
+			GL_FLOAT,
+			GL_FALSE,
+			sizeof(float) * 4,
+			(const void*)8);
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 	glUseProgram(programID);
 
+	int32_t loc;
+	loc = glGetUniformLocation(programID, "u_Texture");
+	if(loc != -1)
+		glUniform1i(loc, 0);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
 	glfwSwapBuffers(pGlfwwindow);
