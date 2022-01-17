@@ -11,14 +11,14 @@ void tlg_read_file(char* path, char** dst)
 		return;
 	}
 	fseek(pFile, 0, SEEK_END);
-	*dst = (char*)malloc(ftell(pFile) * sizeof(char));
+	*dst = (char*)malloc((ftell(pFile) + 1) * sizeof(char));
 	fseek(pFile, 0, SEEK_SET);
 	uint32_t dstTop = 0;
 	char c;
 	while((c = fgetc(pFile)) != EOF)
 		(*dst)[dstTop++] = c;
 	fclose(pFile);
-	(*dst)[dstTop++] = '\0';
+	(*dst)[dstTop] = '\0';
 }
 
 void tlg_compile_shader(char* src, uint32_t SHADER_TYPE, uint32_t* dst){

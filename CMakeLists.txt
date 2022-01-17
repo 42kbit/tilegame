@@ -8,6 +8,7 @@ add_executable(${PROJECT_NAME}
 	src/tlg_mainloop.c
 	src/tlg_shader.c
 	src/tlg_texture.c
+	src/tlg_camera.c
 	)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
