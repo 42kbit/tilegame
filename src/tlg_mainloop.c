@@ -30,6 +30,9 @@ static void tlg_create_glbuffer(void* data, size_t size, uint32_t DRAW_HINT, uin
 	glNamedBufferData(*dst, size, data, DRAW_HINT);
 }
 
+static void window_size_callback(GLFWwindow* window, int width, int height){
+	glViewport(0, 0, width, height);
+}
 void tlg_onload(void) {
 	if(!glfwInit())
 		exit(-1);
@@ -67,6 +70,7 @@ void tlg_onload(void) {
 			&txTux);
 	vec3 cp = {0.f, 0.f, 3.f};
 	tlg_init_camera_data(glm_rad(40.f), cp, &camera); 
+	glfwSetWindowSizeCallback(pGlfwwindow, window_size_callback);
 	}
 
 

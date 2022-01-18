@@ -9,9 +9,13 @@ void tlg_init_camera_data(float radFov, vec3 position, tlg_camera_t* dst)
     memcpy(dst->position, position, sizeof(vec3));
 } 
 
-void tlg_camera_move(tlg_camera_t* target, vec3 dv)
+void tlg_move_camera(tlg_camera_t* target, vec3 dv)
 {
     glm_vec3_add(target->position, dv, target->position);
+}
+
+void tlg_set_camera_position(tlg_camera_t* target, vec3 newpos){
+	memcpy(target->position, newpos, sizeof(vec3));
 }
 
 void tlg_set_camera_rotation(tlg_camera_t* target, float aspectRaito, float x, float y, float z)
