@@ -6,6 +6,7 @@
 #include "tlg_shader.h"
 #include "tlg_texture.h"
 #include "tlg_camera.h"
+#include "tlg_userinput.h"
 
 GLFWwindow* pGlfwwindow = NULL;
 static uint32_t programID = 0;
@@ -71,6 +72,7 @@ void tlg_onload(void) {
 	vec3 cp = {0.f, 0.f, 3.f};
 	tlg_init_camera_data(glm_rad(40.f), cp, &camera); 
 	glfwSetWindowSizeCallback(pGlfwwindow, window_size_callback);
+	tlg_init_userinput(&tlg_userinput, pGlfwwindow);
 	}
 
 
@@ -97,6 +99,11 @@ void tlg_onupdate(void){
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glUseProgram(programID);
+
+	int8_t kstat;
+	tlg_get_key_pressed(&tlg_userinput, GLFW_KEY_ESCAPE, &kstat);
+	if(kstat)
+		glfwSetWindowShouldClose(pGlfwwindow, 1);
 
 	int32_t wx, wy;
 	glfwGetWindowSize(pGlfwwindow, &wx, &wy);
