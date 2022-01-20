@@ -25,7 +25,7 @@ static uint32_t vbo;
 static uint32_t ibo;
 static uint32_t ubo;
 static tlg_camera_t camera;
-
+#define MAX_FPS 60
 static void tlg_create_glbuffer(void* data, size_t size, uint32_t DRAW_HINT, uint32_t* dst){
 	glCreateBuffers(1, dst);
 	glNamedBufferData(*dst, size, data, DRAW_HINT);
@@ -49,6 +49,7 @@ void tlg_onload(void) {
 		glfwTerminate();
 		exit(-1);
 	}	
+	glfwSwapInterval(1);
 	printf("Renderer: %s\n", glGetString(GL_RENDERER));
 	glClearColor( 0.4f, 0.3f, 0.4f, 0.0f );
 	glEnable(GL_BLEND);
@@ -77,6 +78,7 @@ void tlg_onload(void) {
 
 
 void tlg_onupdate(void){
+	double lasttime = glfwGetTime();
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -104,13 +106,21 @@ void tlg_onupdate(void){
 	tlg_get_key_pressed(&tlg_userinput, GLFW_KEY_ESCAPE, &kstat);
 	if(kstat)
 		glfwSetWindowShouldClose(pGlfwwindow, 1);
-
+	vec2 movedir = {0.f, 0.f};
+	int8_t inputs[4];
+	for(int8_t i = 0; i < 4; i++)
+		tlg_get_key_held(&tlg_userinput, GLFW_KEY_RIGHT + i, inputs + i);
+	for(int8_t i = 0; i < 2; i++)
+		movedir[i] = inputs[i*2] == 0? -inputs[i*2+1] : 1;
+	movedir[1] = -movedir[1];
 	int32_t wx, wy;
 	glfwGetWindowSize(pGlfwwindow, &wx, &wy);
 	float aspectRaito = (float)wx / (float)wy;
-
+	
 	vec3 camrotrd = {0.f, 0.f, 0.f};
 	tlg_set_camera_rotation(&camera, aspectRaito, camrotrd[0], camrotrd[1], camrotrd[2]); 
+	vec3 movevec = {movedir[0] * tlg_dt, movedir[1] * tlg_dt, 0.f};
+	tlg_move_camera(&camera, movevec); 
 	int32_t loc;
 	mat4 mod;
 	glm_mat4_identity(mod);
@@ -143,6 +153,9 @@ void tlg_onupdate(void){
 
 	glfwSwapBuffers(pGlfwwindow);
 	glfwPollEvents();	
+	while((glfwGetTime() - lasttime) < (1.0/(double)MAX_FPS)) 
+		;
+	tlg_dt = glfwGetTime() - lasttime;
 }
 
 void tlg_onterminate(void){

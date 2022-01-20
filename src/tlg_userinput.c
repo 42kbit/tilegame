@@ -8,7 +8,7 @@ struct tlg_userinput_s{
 };
 typedef struct tlg_userinput_s tlg_userinput_t;
 tlg_userinput_t tlg_userinput;
-
+double tlg_dt;
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if(action == GLFW_PRESS){
