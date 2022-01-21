@@ -1,4 +1,4 @@
-#include "tlg_mainloop.h"
+#include "tlg_main_loop.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <inttypes.h>
@@ -6,7 +6,7 @@
 #include "tlg_shader.h"
 #include "tlg_texture.h"
 #include "tlg_camera.h"
-#include "tlg_userinput.h"
+#include "tlg_user_input.h"
 
 GLFWwindow* pGlfwwindow = NULL;
 static uint32_t programID = 0;
@@ -24,6 +24,7 @@ static uint32_t indecies[] =
 static uint32_t vbo;
 static uint32_t ibo;
 static uint32_t ubo;
+static uint32_t vao;
 static tlg_camera_t camera;
 #define MAX_FPS 60
 static void tlg_create_glbuffer(void* data, size_t size, uint32_t DRAW_HINT, uint32_t* dst){
@@ -50,11 +51,13 @@ void tlg_onload(void) {
 		exit(-1);
 	}	
 	glfwSwapInterval(1);
+
 	printf("Renderer: %s\n", glGetString(GL_RENDERER));
 	glClearColor( 0.4f, 0.3f, 0.4f, 0.0f );
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	glCreateVertexArrays(1, &vao);
 	tlg_create_glbuffer(vertices, sizeof(vertices), GL_STATIC_DRAW, &vbo);	
 	tlg_create_glbuffer(indecies, sizeof(indecies), GL_STATIC_DRAW, &ibo);
 	tlg_create_glbuffer(NULL, sizeof(mat4) * 2, GL_DYNAMIC_DRAW, &ubo);
@@ -74,32 +77,22 @@ void tlg_onload(void) {
 	tlg_init_camera_data(glm_rad(40.f), cp, &camera); 
 	glfwSetWindowSizeCallback(pGlfwwindow, window_size_callback);
 	tlg_init_userinput(&tlg_userinput, pGlfwwindow);
-	}
+		
+	glEnableVertexArrayAttrib(vao, 0);
+	glVertexArrayAttribBinding(vao, 0, 0);
+	glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, GL_FALSE, 0);
+	glEnableVertexArrayAttrib(vao, 1);
+	glVertexArrayAttribBinding(vao, 1, 0);
+	glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2);	
+	
+	glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(float) * 4);
+	glVertexArrayElementBuffer(vao, ibo);
+}
 
 
 void tlg_onupdate(void){
 	double lasttime = glfwGetTime();
 	glClear(GL_COLOR_BUFFER_BIT);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	
-	glVertexAttribPointer(
-			0,
-			2,
-			GL_FLOAT,
-			GL_FALSE,
-			sizeof(float) * 4,
-			(const void*)0);
-	glVertexAttribPointer(
-			1,
-			2,
-			GL_FLOAT,
-			GL_FALSE,
-			sizeof(float) * 4,
-			(const void*)8);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
 	glUseProgram(programID);
 
 	int8_t kstat;
@@ -149,12 +142,12 @@ void tlg_onupdate(void){
 	loc = glGetUniformBlockIndex(programID, "ub_ProjView");
 	if(loc != GL_INVALID_INDEX)
 		glUniformBlockBinding(programID, loc, camBlockInd);
+	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+	glBindVertexArray(0);
 
 	glfwSwapBuffers(pGlfwwindow);
 	glfwPollEvents();	
-	while((glfwGetTime() - lasttime) < (1.0/(double)MAX_FPS)) 
-		;
 	tlg_dt = glfwGetTime() - lasttime;
 }
 

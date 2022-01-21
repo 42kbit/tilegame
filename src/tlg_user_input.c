@@ -1,4 +1,4 @@
-#include "tlg_userinput.h"
+#include "tlg_user_input.h"
 #include <string.h>
 #define TLG_KEYS_ARRAY_SIZE GLFW_KEY_LAST
 

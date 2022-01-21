@@ -5,11 +5,13 @@ project(${PROJECT_NAME})
 
 add_executable(${PROJECT_NAME}
 	src/tlg_main.c
-	src/tlg_mainloop.c
+	src/tlg_main_loop.c
 	src/tlg_shader.c
 	src/tlg_texture.c
 	src/tlg_camera.c
-	src/tlg_userinput.c
+	src/tlg_user_input.c
+	src/tlg_vertex_types.c
+	src/tlg_batch_renderer.c
 	)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)

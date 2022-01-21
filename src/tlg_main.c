@@ -1,5 +1,5 @@
 #include "glglfw.h"
-#include "tlg_mainloop.h"
+#include "tlg_main_loop.h"
 
 #include <stdlib.h>
 int main(void){

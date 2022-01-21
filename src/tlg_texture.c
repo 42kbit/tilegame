@@ -22,28 +22,21 @@ void tlg_gl_gen_texture2D_from_memory(
 		uint32_t  sx,
 		uint32_t  sy,
 		uint32_t  cnls,    
-		uint32_t  minmagm, // minmagfilter mode
-		uint32_t  wrpm,    // wrapmode
-		uint32_t* glidd    // glID destination
+		uint32_t  minmagm, 
+		uint32_t  wrpm,    
+		uint32_t* glidd    
 		)
 {
-	glGenTextures(1, glidd);
+	glCreateTextures(GL_TEXTURE_2D, 1, glidd);
 	glBindTexture(GL_TEXTURE_2D, *glidd);
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minmagm);
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, minmagm);
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrpm); 
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrpm); 
-	glTexImage2D(
-			GL_TEXTURE_2D,
-			0,
-			cnls,
-			sx,
-			sy,
-			0,
-			cnls == 4? GL_RGBA : GL_RGB,
-			GL_UNSIGNED_BYTE,
-			pix);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	glTextureParameteri(*glidd, GL_TEXTURE_MIN_FILTER, minmagm);
+	glTextureParameteri(*glidd, GL_TEXTURE_MAG_FILTER, minmagm);
+	glTextureParameteri(*glidd, GL_TEXTURE_WRAP_T, wrpm); 
+	glTextureParameteri(*glidd, GL_TEXTURE_WRAP_S, wrpm); 
+
+	glTextureStorage2D(*glidd, 1, cnls == 4? GL_RGBA8 : GL_RGB8, sx, sy);
+	glTextureSubImage2D(*glidd, 0, 0, 0, sx, sy, cnls == 4? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, pix);
+	glGenerateTextureMipmap(*glidd);
 }
 
 void tlg_gl_gen_texture2D_from_file(
